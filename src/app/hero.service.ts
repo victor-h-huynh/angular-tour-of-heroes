@@ -7,17 +7,21 @@ import { Observable, of } from 'rxjs';
 
 import { MessageService } from './message.service';
 
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { catchError, map, tap} from 'rxjs/operators';
+
 @Injectable({
   providedIn: 'root'
 })
 export class HeroService {
 
-  constructor(private messageService: MessageService) { }
+  constructor(
+    private http: HttpClient,
+    private messageService: MessageService
+    ) { }
 
   getHeroes(): Observable<Hero[]> {
-    const heroes = of (HEROES);
-    this.messageService.add('HeroService: fetched heroes')
-    return heroes;
+    return this.http.get<Hero[]>(this.heroesUrl);
   }
 
   getHero(id: number): Observable<Hero> {
@@ -27,4 +31,10 @@ export class HeroService {
     this.messageService.add(`HeroService: fetched hero id=${id}`);
     return of (hero);
   }
+
+  private log (message: string) {
+    this.messageService.add(`HeroService: ${message}`);
+  }
+
+  private heroesUrl = 'api/heroes';
 }
